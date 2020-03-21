@@ -11,6 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.15",
+    "pluralize": "^8.0.0",
     "request": "^2.88.2"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@LeoMartinDev"
   }
 }

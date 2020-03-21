@@ -13,6 +13,16 @@ let path = require('path');
 const {defaults, mapValues, keys, values, flatten, filter,
 first, last, some, merge, isArray, startsWith, endsWith} = require('lodash');
 
+const Utils = require('./Utils');
+const Auth = require('./Auth');
+const DSM = require('./DSM');
+const FileStation = require('./FileStation');
+const DownloadStation = require('./DownloadStation');
+const AudioStation = require('./AudioStation');
+const VideoStation = require('./VideoStation');
+const VideoStationDTV = require('./VideoStationDTV');
+const SurveillanceStation = require('./SurveillanceStation');
+
 const definitions = {
     '5.x': require('./definitions.5.x.json'),
     '6.x': require('./definitions.6.x.json'),

@@ -11,15 +11,8 @@ const AuthenticatedAPI = require('./AuthenticatedAPI');
 module.exports = class FileStation extends AuthenticatedAPI {
 
     constructor(syno){
-        {
-          // Hack: trick Babel/TypeScript into allowing this before super.
-          if (false) { super(); }
-          let thisFn = (() => { return this; }).toString();
-          let thisName = thisFn.match(/return (?:_assertThisInitialized\()*(\w+)\)*;/)[1];
-          eval(`${thisName} = this;`);
-        }
+        super(syno);
         this.syno = syno;
-        super(this.syno);
         this.sessionName = 'FileStation';
         this.syno.createFunctionsFor(this, ['SYNO.FileStation']);
     }
