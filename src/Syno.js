@@ -38,21 +38,21 @@ module.exports = (function() {
             // Default synology parameters
             defParams = {
                 // Default account is null
-                account: process.env.SYNO_ACCOUNT,
+                account: undefined,
                 // Default password is null
-                passwd: process.env.SYNO_PASSWORD,
+                passwd: undefined,
                 // Default protocol is HTTP (`http`)
-                protocol: process.env.SYNO_PROTOCOL || 'http',
+                protocol: 'http',
                 // Default host is `localhost`
-                host: process.env.SYNO_HOST || 'localhost',
+                host: 'localhost',
                 // Default port is `5000`
-                port: process.env.SYNO_PORT || 5000,
+                port: 5000,
                 // Default api version is `6.2.2`
-                apiVersion: process.env.SYNO_API_VERSION || '6.2.2',
+                apiVersion: '6.2.2',
                 // Default debug flag is `false`
-                debug: process.env.SYNO_DEBUG || false,
+                debug: false,
                 // Default ignore certificate errors
-                ignoreCertificateErrors: process.env.SYNO_IGNORE_CERTIFICATE_ERRORS || false
+                ignoreCertificateErrors: false
             };
     
             apiVersionsAvailable = ['5.0', '5.1', '5.2',

@@ -8,6 +8,8 @@
 // Require lodash functions
 const {extend, defaults, isEmpty, mapValues} = require('lodash');
 
+const Utils = require('./Utils');
+
 // Class API
 module.exports = (function() {
     let noop = undefined;
