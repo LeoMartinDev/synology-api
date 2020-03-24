@@ -33,7 +33,6 @@ module.exports = (function() {
         // `options.method`  [String] API method
         // `options.params`  [Object] API parameters
         request(options){
-            console.log('options', options);
             // Get protocol, host and port variables from syno instance
             if (options == null) { options = {}; }
             const {protocol, host, port} = this.syno;

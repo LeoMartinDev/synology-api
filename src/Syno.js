@@ -128,7 +128,6 @@ Available versions are: ${apiVersionsAvailable.join(', ')}`
             return (() => {
                 const result = [];
                 for (var api of Array.from(apis)) {
-                    console.log('api', api);
                     var apiKeys = filter(keys(definitions), key => startsWith(key, api));
                     result.push((() => {
                         const result1 = [];
