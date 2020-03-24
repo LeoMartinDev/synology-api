@@ -13,6 +13,9 @@ let path = require('path');
 const {defaults, mapValues, keys, values, flatten, filter,
 first, last, some, merge, isArray, startsWith, endsWith, cloneDeep} = require('lodash');
 
+const definitionsV5 = require('./definitions/definitions.5.x.json');
+const definitionsV6 = require('./definitions/definitions.6.x.json');
+
 const Utils = require('./Utils');
 const Auth = require('./Auth');
 const DSM = require('./DSM');
@@ -24,8 +27,8 @@ const VideoStationDTV = require('./VideoStationDTV');
 const SurveillanceStation = require('./SurveillanceStation');
 
 const definitions = {
-    '5.x': require('./definitions.5.x.json'),
-    '6.x': require('./definitions.6.x.json'),
+    '5.x': definitionsV5,
+    '6.x': definitionsV6,
 };
 
 // Class Syno
@@ -98,19 +101,19 @@ Available versions are: ${apiVersionsAvailable.join(', ')}`
             // Add auth API
             this.auth = new Auth(this);
             // Add DSM API
-            // this.dsm = (this.diskStationManager = new DSM(this));
+            this.dsm = (this.diskStationManager = new DSM(this));
             // Add FileStation API
             this.fs = (this.fileStation = new FileStation(this));
-            // // Add Download Station API
-            // this.dl = (this.downloadStation = new DownloadStation(this));
-            // // Add Audio Station API
-            // this.as = (this.audioStation = new AudioStation(this));
-            // // Add Video Station API
-            // this.vs = (this.videoStation = new VideoStation(this));
-            // // Add Video Station DTV API
-            // this.dtv = (this.videoStationDTV = new VideoStationDTV(this));
-            // // Add Surveillance Station API
-            // this.ss = (this.surveillanceStation = new SurveillanceStation(this));
+            // Add Download Station API
+            this.dl = (this.downloadStation = new DownloadStation(this));
+            // Add Audio Station API
+            this.as = (this.audioStation = new AudioStation(this));
+            // Add Video Station API
+            this.vs = (this.videoStation = new VideoStation(this));
+            // Add Video Station DTV API
+            this.dtv = (this.videoStationDTV = new VideoStationDTV(this));
+            // Add Surveillance Station API
+            this.ss = (this.surveillanceStation = new SurveillanceStation(this));
         }
 
         loadDefinitions() {
