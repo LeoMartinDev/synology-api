@@ -15,7 +15,6 @@ module.exports = (function() {
     let noop = undefined;
     API = class API {
         static initClass() {
-    
             // Privat noop class
             noop = function() {};
         }
@@ -33,10 +32,10 @@ module.exports = (function() {
         // `options.path`    [String] API path
         // `options.method`  [String] API method
         // `options.params`  [Object] API parameters
-        request(options, done){
+        request(options){
+            console.log('options', options);
             // Get protocol, host and port variables from syno instance
             if (options == null) { options = {}; }
-            if (done == null) { done = noop; }
             const {protocol, host, port} = this.syno;
             // Get api, version, path, method, params variables from options
             const {api, version, path, method, params} = options;
@@ -47,26 +46,24 @@ module.exports = (function() {
             const qs = defaults({api, version, method}, params);
 
             // Launch syno request with url and querystring
-            return this.syno.request({url, qs}, (error, response, body)=> {
-                // Call done callback with error if there is an error
-                if (error) { return done(error); }
-                // Call done callback with statusCode error if there is an error with the response
-                if (response.statusCode !== 200) {
-                    error = new Error(`HTTP status code: ${response.statusCode}`);
-                    error.response = response;
-                    return done(error);
-                }
-                // Call done callback with error if there is an error server side
-                if (!body.success ||
-                (body.success && body.data && body.data instanceof Array && body.data[0] && body.data[0].error)) {
-                    const code = body.error ? body.error.code : body.data[0].error;
-                    error = new Error(this.error(code, api));
-                    error.code = code;
-                    if (body.error && body.error.errors) { error.errors = body.error.errors; }
-                    return done(error);
-                }
-                // Call done callback with no error and the data property of the response
-                return done(null, body.data);
+            return new Promise((resolve, reject) => {
+                this.syno.request({ url, qs }, (error, response, body)=> {
+                    if (error) { return reject(error); }
+                    if (response.statusCode !== 200) {
+                        error = new Error(`HTTP status code: ${response.statusCode}`);
+                        error.response = response;
+                        return reject(error);
+                    }
+                    if (!body.success ||
+                    (body.success && body.data && body.data instanceof Array && body.data[0] && body.data[0].error)) {
+                        const code = body.error ? body.error.code : body.data[0].error;
+                        error = new Error(this.error(code, api));
+                        error.code = code;
+                        if (body.error && body.error.errors) { error.errors = body.error.errors; }
+                        return reject(error);
+                    }
+                    return resolve(body.data);
+                });
             });
         }
 
@@ -80,16 +77,14 @@ module.exports = (function() {
         // `args.apiInfos.method`    [String] API method
         // `args.requiredParams`     [String[]] List of required parameters for the API
         requestAPI(args){
-            let {apiInfos, requiredParams, params, done} = args;
+            let { apiInfos, requiredParams, params } = args;
 
-            // Process optional parameters and done callback
-            ({params, done} = Utils.optionalParamsAndDone({params, done}));
+            ({ params } = Utils.optionalParamsAndDone({ params }));
             // Force params to be string if they can be converted to strings (boolean, numbers...)
             params = mapValues(params, param => param && param.toString());
             // Create request options based on parameters and api infos
-            const opts = extend({}, apiInfos, {params});
-            // Call request with options and done callback
-            return this.request(opts, done);
+            const opts = extend({}, apiInfos, { params });
+            return this.request(opts);
         }
 
         // Handle API errors

@@ -24,8 +24,7 @@ module.exports = (function() {
         }
 
         // Login to Syno
-        // `done` [Function] Callback called when the login processed is complete
-        login(sessionName, done){
+        login(sessionName){
             // API method is `login`
             const method = 'login';
             // Parameters
@@ -47,12 +46,11 @@ module.exports = (function() {
             this.syno.sessions[sessionName]['_sid'] = null;
 
             // Request login
-            return this.request({api, version, path, method, params}, done);
+            return this.request({api, version, path, method, params});
         }
 
         // Logout to syno
-        // `done` [Function] Callback called when the logout process is complete
-        logout(sessionName = null, done){
+        logout(sessionName = null){
             // Don't do anything if there is no session
             if (!this.syno.sessions) { return null; }
             // API method is `logout`
@@ -68,7 +66,7 @@ module.exports = (function() {
             }
 
             // Request logout
-            return this.request({api, version, path, method, params}, done);
+            return this.request({api, version, path, method, params});
         }
 
         // Handle auth specific errors

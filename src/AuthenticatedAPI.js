@@ -20,21 +20,17 @@ module.exports = (function() {
         }
 
         // Overrides request : login before calling real request
-        request(options, done){
-            // If session property is set, call real request
-            if (done == null) { done = noop; }
+        async request(options) {
             if (this.syno.sessions && this.syno.sessions[options.sessionName] && this.syno.sessions[options.sessionName]['_sid']) {
-                return super.request(options, done);
+                return super.request(options);
             // Else login then call real request
-            } else { return this.syno.auth.login(options.sessionName, (error, response)=> {
-                if (error) {
-                    return done(error);
-                } else {
-                    this.syno.sessions[options.sessionName] = response['sid'];
-                    options.params['_sid'] = response['sid'];
-                    return AuthenticatedAPI.prototype.__proto__.request.call(this, options, done);
-                }
-            }); }
+            } else {
+                const response = await this.syno.auth.login(options.sessionName);
+
+                this.syno.sessions[options.sessionName] = response['sid'];
+                options.params['_sid'] = response['sid'];
+                return AuthenticatedAPI.prototype.__proto__.request.call(this, options);
+            }
         }
     };
     AuthenticatedAPI.initClass();

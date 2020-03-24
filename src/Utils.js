@@ -113,12 +113,7 @@ module.exports = class Utils {
     static optionalParamsAndDone(options){
         // Get params and done varaibles from options
         if (options == null) { options = {}; }
-        const {params, done} = options;
-
-        // If the done function is not defined, then use the params if it is a function, or use the no operation function
-        if (!done) {
-            options.done = isFunction(params) ? params : function() {};
-        }
+        const { params } = options;
 
         // If params is not a plain object, use an empty one
         if (!isPlainObject(params)) { options.params = {}; }

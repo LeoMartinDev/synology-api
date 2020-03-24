@@ -23,6 +23,7 @@
         "download",
         "delete",
         "getinfo",
+        "getinfo",
         "delete_symlink"
       ],
       "3": [

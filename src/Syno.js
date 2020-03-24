@@ -11,7 +11,7 @@ const request = require('request');
 const fs = require('fs');
 let path = require('path');
 const {defaults, mapValues, keys, values, flatten, filter,
-first, last, some, merge, isArray, startsWith, endsWith} = require('lodash');
+first, last, some, merge, isArray, startsWith, endsWith, cloneDeep} = require('lodash');
 
 const Utils = require('./Utils');
 const Auth = require('./Auth');
@@ -98,19 +98,19 @@ Available versions are: ${apiVersionsAvailable.join(', ')}`
             // Add auth API
             this.auth = new Auth(this);
             // Add DSM API
-            this.dsm = (this.diskStationManager = new DSM(this));
+            // this.dsm = (this.diskStationManager = new DSM(this));
             // Add FileStation API
             this.fs = (this.fileStation = new FileStation(this));
-            // Add Download Station API
-            this.dl = (this.downloadStation = new DownloadStation(this));
-            // Add Audio Station API
-            this.as = (this.audioStation = new AudioStation(this));
-            // Add Video Station API
-            this.vs = (this.videoStation = new VideoStation(this));
-            // Add Video Station DTV API
-            this.dtv = (this.videoStationDTV = new VideoStationDTV(this));
-            // Add Surveillance Station API
-            this.ss = (this.surveillanceStation = new SurveillanceStation(this));
+            // // Add Download Station API
+            // this.dl = (this.downloadStation = new DownloadStation(this));
+            // // Add Audio Station API
+            // this.as = (this.audioStation = new AudioStation(this));
+            // // Add Video Station API
+            // this.vs = (this.videoStation = new VideoStation(this));
+            // // Add Video Station DTV API
+            // this.dtv = (this.videoStationDTV = new VideoStationDTV(this));
+            // // Add Surveillance Station API
+            // this.ss = (this.surveillanceStation = new SurveillanceStation(this));
         }
 
         loadDefinitions() {
@@ -125,6 +125,7 @@ Available versions are: ${apiVersionsAvailable.join(', ')}`
             return (() => {
                 const result = [];
                 for (var api of Array.from(apis)) {
+                    console.log('api', api);
                     var apiKeys = filter(keys(definitions), key => startsWith(key, api));
                     result.push((() => {
                         const result1 = [];
@@ -132,8 +133,7 @@ Available versions are: ${apiVersionsAvailable.join(', ')}`
                             if (definitions[api].methods) {
                                 var lastApiVersionMethods = definitions[api].methods[last(keys(definitions[api].methods))];
                                 if (!some(lastApiVersionMethods, m => typeof(m) === 'string')) {
-                                    lastApiVersionMethods =
-                                      flatten(values(mapValues(lastApiVersionMethods, m => keys(m))));
+                                    lastApiVersionMethods = flatten(values(mapValues(lastApiVersionMethods, m => keys(m))));
                                 }
                                 result1.push((() => {
                                     const result2 = [];
@@ -142,18 +142,22 @@ Available versions are: ${apiVersionsAvailable.join(', ')}`
                                         const functionName = Utils.createFunctionName(api, method);
                                         path = 'path' in definitions[api] ? definitions[api].path : 'entry.cgi';
                                         const version = 'maxVersion' in definitions[api] ? definitions[api].maxVersion : 1;
-                                        result2.push(object.__proto__[functionName] = new Function('params', 'done', `\
-this.requestAPI({ \
-params: params, \
-done: done, \
-apiInfos: { \
-sessionName: ` + "'" + object.sessionName + "'" + `, \
-api: ` + "'" + api + "'" + `, \
-version:` + "'" + version + "'" + `, \
-path: ` + "'" + path + "'" + `, \
-method: ` + "'" + method + "'" + `\
-} \
-});`));
+                                        const apiInfos = cloneDeep({
+                                            api,
+                                            version,
+                                            path,
+                                            method,
+                                        });
+
+                                        result2.push(object[functionName] = function(params) {
+                                            return this.requestAPI({
+                                                params,
+                                                apiInfos: {
+                                                    sessionName: this.sessionName,
+                                                    ...apiInfos,
+                                                },
+                                            });
+                                        }.bind(object));
                                     }
                                     return result2;
                                 })());
