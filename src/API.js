@@ -33,6 +33,7 @@ module.exports = (function() {
         // `options.method`  [String] API method
         // `options.params`  [Object] API parameters
         request(options){
+            console.log('options', options);
             // Get protocol, host and port variables from syno instance
             if (options == null) { options = {}; }
             const {protocol, host, port} = this.syno;
@@ -56,6 +57,7 @@ module.exports = (function() {
                     if (!body.success ||
                     (body.success && body.data && body.data instanceof Array && body.data[0] && body.data[0].error)) {
                         const code = body.error ? body.error.code : body.data[0].error;
+                        console.log('body error ', body);
                         error = new Error(this.error(code, api));
                         error.code = code;
                         if (body.error && body.error.errors) { error.errors = body.error.errors; }

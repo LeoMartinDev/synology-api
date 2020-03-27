@@ -25,11 +25,17 @@ module.exports = (function() {
                 return super.request(options);
             // Else login then call real request
             } else {
-                const response = await this.syno.auth.login(options.sessionName);
+                try {
+                    const response = await this.syno.auth.login(options.sessionName);
 
-                this.syno.sessions[options.sessionName] = response['sid'];
-                options.params['_sid'] = response['sid'];
-                return AuthenticatedAPI.prototype.__proto__.request.call(this, options);
+                    console.log('options.sessionName', options.sessionName);
+                    // TODO manque le sess id dans la query ???
+                    this.syno.sessions[options.sessionName]['_sid'] = response['sid'];
+                    options.params['_sid'] = response['sid'];
+                    return AuthenticatedAPI.prototype.__proto__.request.call(this, options);
+                } catch (error) {
+                    console.log(error);
+                }
             }
         }
     };
